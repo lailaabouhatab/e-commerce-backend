@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import UsersModel from "../models/usersModel";
-
+import bcrypt from "bcryptjs";
 export interface ServiceResponse<T> {
   success: boolean;
   data?: T;
@@ -10,6 +10,7 @@ export interface ServiceResponse<T> {
 export interface ConfirmResetCodeRequest {
   email?: string;
   code?: string;
+  password?: string;
 }
 
 export default class ResetPasswordService {
@@ -81,6 +82,13 @@ Expires In: 15 Minutes
         };
       }
 
+      if (!userData.password?.trim()) {
+        return {
+          success: false,
+          error: "New password is required",
+        };
+      }
+
       const email = userData.email.trim().toLowerCase();
 
       const user = await UsersModel.findOne({ email });
@@ -111,6 +119,9 @@ Expires In: 15 Minutes
 
       user.code = "";
       user.codeExpires = null;
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      user.password = hashedPassword;
+      user.isverified = true;
 
       await user.save();
 
