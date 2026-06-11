@@ -5,6 +5,7 @@ import authRouter from "./routes/authRoutes";
 import productsRoutes from "./routes/productsRoutes";
 import ordersRoutes from "./routes/ordersRoutes";
 import resetPasswordRoutes from "./routes/resetPasswordRoutes";
+import cors from "cors";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ const PORT = Number(process.env.PORT) || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(cors());
 // Routes
 app.get("/", (_req: Request, res: Response) => {
   res.json({
