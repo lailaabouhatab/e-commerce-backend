@@ -50,7 +50,6 @@ export class AuthService {
       password: hashedPassword,
       isverified: false,
     });
-//console.log(`New user registered: ${newUser.password}, password: ${password}, hashedPassword: ${hashedPassword}`);
     const userObj = newUser.toObject();
     const { password: _, ...userWithoutPassword } = userObj;
 
@@ -112,15 +111,24 @@ export class AuthService {
       if (!user) {
         return { success: false, error: "User not found" };
       }
-     console.log(user.password);
+      console.log(user.password);
 
+
+//==============================================================
+      // if (user.isverified === false) {
+      //   return {
+      //     success: false,
+      //     error: "Please verify your email before logging in",
+      //   };
+      // }
+
+//==============================================================
       const valid = await bcrypt.compare(password, user.password);
-   //  console.log(valid,user.password);
+      //  console.log(valid,user.password);
       if (!valid) {
-
         return { success: false, error: "Invalid credentials" };
-      }
-console.log(`Attempting login for email: ${email}`,password);
+       }
+      console.log(`Attempting login for email: ${email}`, password);
       const JWT_SECRET = process.env.JWT_SECRET;
 
       if (!JWT_SECRET) {
@@ -135,22 +143,21 @@ console.log(`Attempting login for email: ${email}`,password);
         JWT_SECRET,
         {
           expiresIn: "1h",
-        }
+        },
       );
 
       return {
         success: true,
         token,
-          user: {
-            id: user._id,
-            fullName: user.fullName,
-            email: user.email,
-            role: user.role,
-          },
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+        },
       };
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unknown error";
+      const message = error instanceof Error ? error.message : "Unknown error";
 
       return {
         success: false,
